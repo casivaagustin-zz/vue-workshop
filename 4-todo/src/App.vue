@@ -1,27 +1,33 @@
 <template>
   <div id="app">    
     <h1>✍️ TODO LIST</h1>    
-    <div class="new">
-      <label>Nueva Tarea: </label>
-      <input type="text" v-model.lazy="newTask" /> 
-      <button @click="addNewTask">Añadir</button>
-    </div>
+    <addNew v-bind:todos="todos"></addNew>
     <h1>Mis tareas</h1>
     <div class="tareas">
-      <div v-for="todo in todos" :key="todo.id" class="tarea" v-bind:class="{done: todo.done}">
-        <span @click="markAsDone(todo)" v-show="todo.done == 0">✅</span>
-        {{ todo.name }}
-      </div>
+      <task v-for="todo in todos" :key="todo.id" v-bind:todo="todo">      
+      </task>
+
       <div v-show="todos.length == 0" class="tarea">
         Sin tareas 😁
       </div>
+
+      <allDone v-on:markAllAsDone="handleMarkAllAsDone"></allDone>
     </div>  
   </div>   
 </template>
 
 <script>
+import task from './components/Task';
+import allDone from './components/allDone';
+import addNew from './components/addNew';
+
 export default {
   name: 'app',
+  components: {
+    task,
+    allDone,
+    addNew
+  },
   data () {
     return {
       newTask: '',
@@ -41,8 +47,11 @@ export default {
       this.todos.push(newTask);
       this.newTask = '';
     },
-    markAsDone: function(todo) {
-      todo.done = 1;
+    handleMarkAllAsDone: function() {
+        var that = this;
+        this.todos.forEach(function(todo, index) {
+            that.todos[index].done = 1;
+        });
     }
   }
 }
